@@ -1,0 +1,64 @@
+#dataSources:
+#  ds0:
+#    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+#    driverClassName: com.mysql.cj.jdbc.Driver
+#    jdbcUrl: jdbc:mysql://127.0.0.1:3306/springboot_case_demo
+#    username: root
+#    password: 666666
+#rules:
+##- !SINGLE
+##  tables:
+##    - "*.*"
+#- !SHARDING
+#  tables:
+#    blade_log_api:
+#      actualDataNodes: ds0.blade_log_api_${2024}${1..12} # 示例：202300-202311, 202400-202411
+#      tableStrategy:
+#        standard:
+#          shardingColumn: create_time
+#          shardingAlgorithmName: database_inline
+#  # 绑定表
+##  bindingTables:
+##    - blade_log_api
+#  shardingAlgorithms:
+#    database_inline:
+#      type: INLINE
+#      props:
+#        algorithm-expression: blade_log_api_${create_time.toLocalDate().format(DateTimeFormatter.ofPattern('yyyyMM'))}
+#props:
+#  sql-show: true
+
+dataSources:
+  ds0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://127.0.0.1:3306/springboot_case_demo
+    username: root
+    password: 666666
+rules:
+  #- !SINGLE
+  #  tables:
+  #    - "*.*"
+  - !SHARDING
+    tables:
+      blade_log_api:
+        actualDataNodes: ds0.blade_log_api_${202411..202412} # 示例：202300-202311, 202400-202411
+        tableStrategy:
+          standard:
+            shardingColumn: create_time
+            shardingAlgorithmName: database_inline
+    # 绑定表
+    #  bindingTables:
+    #    - blade_log_api
+    shardingAlgorithms:
+      database_inline:
+        type: INTERVAL
+        props:
+          datetime-pattern: "yyyy-MM-dd HH:mm:ss"  # 分片字段格式
+          datetime-lower: "2024-10-01 00:00:00"  # 范围下限
+          datetime-upper: "2024-12-31 23:59:59"  # 范围上限
+          sharding-suffix-pattern: "yyyyMM"  # 分片名后缀，可以是MM，yyyyMMdd等。
+          datetime-interval-amount: 1  # 分片间隔，这里指一个月
+          datetime-interval-unit: "MONTHS" # 分片间隔单位
+props:
+  sql-show: true
